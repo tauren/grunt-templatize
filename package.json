@@ -1,0 +1,37 @@
+{
+  "name": "grunt-templatize",
+  "description": "Super simple grunt task to convert an HTML file into a Javascript function",
+  "version": "0.1.0",
+  "keywords": [
+    "gruntplugin",
+    "html",
+    "template"
+  ],
+  "url": "http://github.com/tauren/grunt-templatize",
+  "maintainers": [
+    {
+      "name": "Tauren Mills",
+      "email": "tauren@groovee.com"
+    }
+  ],
+  "licenses": [
+    {
+      "type": "MIT",
+      "url": "https://raw.github.com/tauren/grunt-templatize/master/LICENSE"
+    }
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/tauren/grunt-templatize"
+  },
+  "engines": {
+    "node": ">=0.4.8"
+  },
+  "bugs": {
+    "url": "https://github.com/tauren/grunt-templatize/issues"
+  },
+  "main": "lib/templatize",
+  "dependencies": {
+    "templatize": "~0.1.0"
+  }
+}
