@@ -235,3 +235,45 @@ grunt.initConfig({
 });
 ```
 
+## HTML Fragments
+
+If you have templates that contain ill-formed HTML, as is often the case, then using the HTML Minifier feature will break your templates. This is because the minifier also makes the HTML well-formed by adding missing closing tags and removing extraneous closing tags.
+
+To turn off the HTML minifier, set `htmlmin: false`. Note that the option can be set differently for each target, as in this example:
+
+```javascript
+grunt.initConfig({
+  templatize: {
+    app: {
+      src: 'templates/app/*.tmplz',
+      dest: 'dist/js/app-templates.js'
+    },
+    components: {
+      options: {
+        templatize: {
+          htmlmin: false
+        }
+      },
+      src: 'templates/components/*.tmplz',
+      dest: 'dist/js/components-templates.js'
+    }
+  }
+});
+```
+
+Any option can also be set for all targets using this style of options configuration:
+
+```javascript
+templatize: {
+  options: {
+    templatize: {
+      htmlmin: false
+    }
+  },
+  app: {
+    src: 'templates/*.tmplz',
+    dest: 'dist/templates.js'
+  }
+}
+```
+
