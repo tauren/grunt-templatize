@@ -1,0 +1,2 @@
+!function(root){root.templatize.footer=function(model){return '<footer><a src="'+model.url+'">'+model.text+'</a></footer>';}
+root.templatize.header=function(model){return '<header><h1>'+model.title+'</h1><div>'+model.body+'</div></header>';}}(this);
