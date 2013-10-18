@@ -26,18 +26,25 @@ module.exports = function(grunt) {
       lastSuffix: ''
     },
     amd: {
+      // Prefix at top of each output file 
       prefix: 'define({',
+      // Suffix at end of each output file
       suffix: '});',
+      // Prefix before first source file 
       firstPrefix: '',
+      // Prefix before each source file except the first
       eachPrefix: '',
+      // Output between key (source filename) and function 
       eachMiddle: ':',
+      // Suffix after each source file except the last
       eachSuffix: ',',
+      // Suffix after last source file
       lastSuffix: ''
     },
     namespace: {
       prefix: "!function(root){",
       suffix: "}(this);",
-      firstPrefix: '',
+      firstPrefix: 'root.templatize.',
       eachPrefix: 'root.templatize.',
       eachMiddle: '=',
       eachSuffix: '',
@@ -46,8 +53,12 @@ module.exports = function(grunt) {
   };
 
   grunt.registerMultiTask('templatize', 'Templatize HTML.', function() {
-    // Merge task-specific and/or target-specific options with AMD format defaults.
-    var options = this.options(formats[this.options().format || 'amd'] || formats.amd);
+
+    // Merge task-specific and/or target-specific options 
+    // with specified format defaults, defaulting to amd format.
+    var options = this.options(
+      formats[this.options().format || 'amd'] || formats.amd
+    );
     
     // Iterate over all src-dest file pairs.
     this.files.forEach(function(f) {
@@ -65,8 +76,7 @@ module.exports = function(grunt) {
         // Read file source.
         var src = grunt.file.read(filepath);
         // Templatize file into a function
-        // TODO: Add a way to override templatize options from gruntfile config
-        src = templatize(src, {format:'func'});
+        src = templatize(src, options.templatize);
         // Get the base name of the file to use as template name
         var name = path.basename(filepath, path.extname(filepath));
         // Output key/value pair of template name and function 
