@@ -32,6 +32,6 @@
   },
   "main": "lib/templatize",
   "dependencies": {
-    "templatize": "~0.1.2"
+    "templatize": "~0.2.0"
   }
 }

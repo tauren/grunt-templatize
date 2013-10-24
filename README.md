@@ -208,14 +208,6 @@ grunt.initConfig({
         lastSuffix: '',
         // Options to pass to the templatize library
         templatize: {
-          // Locates handlebars-like tags: {{ foo.bar }}
-          regex: /\{{\s?(.*?)\s?\}}/g,
-          // Wraps templatized output into a function
-          prefix: "function(model){return '",
-          suffix: "';}",
-          // Specify model variable name (update this if the prefix
-          // is changed with a variable name besides "model")
-          model: "model",
           // Options to use with the HTML Minifier
           htmlmin: {
             removeComments: true,
@@ -227,7 +219,11 @@ grunt.initConfig({
             useShortDoctype: true,
             removeEmptyAttributes: false,
             removeOptionalTags: false    
-          }
+          },
+          // Set htmlminEnable to true to always minify html
+          htmlminEnable: false,
+          // Set htmlminMultiLines to true to minify files with more than one line
+          htmlminMultiLines: false          
         }
       }
     }
@@ -237,9 +233,11 @@ grunt.initConfig({
 
 ## HTML Fragments
 
+By default, grunt-templatize will minify all of your HTML templates.
+
 If you have templates that contain ill-formed HTML, as is often the case, then using the HTML Minifier feature will break your templates. This is because the minifier also makes the HTML well-formed by adding missing closing tags and removing extraneous closing tags.
 
-To turn off the HTML minifier, set `htmlmin: false`. Note that the option can be set differently for each target, as in this example:
+To turn off the HTML minifier, set `htmlminEnable: false`. Note that the option can be set differently for each target, as in this example:
 
 ```javascript
 grunt.initConfig({
@@ -251,7 +249,26 @@ grunt.initConfig({
     components: {
       options: {
         templatize: {
-          htmlmin: false
+          htmlminEnable: false
+        }
+      },
+      src: 'templates/components/*.tmplz',
+      dest: 'dist/js/components-templates.js'
+    }
+  }
+});
+```
+
+In many cases, HTML fragment templates are very short and can live on a single line. By setting `htmlminMultiLines: true`, any single-line templates will not be minified, but any templates that contain more than one line will be minified.
+
+```javascript
+grunt.initConfig({
+  templatize: {
+    components: {
+      options: {
+        templatize: {
+          htmlminEnable: false,
+          htmlminMultiLines: true
         }
       },
       src: 'templates/components/*.tmplz',
@@ -267,7 +284,7 @@ Any option can also be set for all targets using this style of options configura
 templatize: {
   options: {
     templatize: {
-      htmlmin: false
+      htmlminEnable: false
     }
   },
   app: {
