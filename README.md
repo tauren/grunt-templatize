@@ -294,3 +294,46 @@ templatize: {
 }
 ```
 
+## Iteration in Templates
+
+Iteration is supported using `{{#each item}}` and `{{/each}}` tags in your templates.  When these tags are used, the templatized output includes calls to the `_.map()` function. If you are using Underscore or Lodash, this is available out of the box. If not, any implementation that is API compatible with the Underscore version should work.
+
+Note that you may need to provide a custom `prefix` and `suffix` to use iteration effectively. For instance, to use this in an AMD module, you could use this configuration:
+
+```javascript
+templatize: {
+  options: {
+    prefix: 'define(["lodash"],function(_){return {',
+    suffix: '};});'
+  }
+}
+```
+
+Here is an example of using the `{{#each}}` iterator:
+
+```
+<h1>{{title}}</h1>
+<ul>
+  {{#each items}}
+  <li>
+    <span>{{name}}</span>
+    <span>{{../foo}}</span>
+  </li>
+  {{/each}}
+</ul>
+```
+
+This template should be given an object with this structure:
+
+```javascript
+{
+  title: 'This is the title',
+  foo: 'FOO',
+  items: [
+    { name: 'Item A' },
+    { name: 'Item B' }
+  ]
+}
+```
+
+Note that templatize supports nested `{{#each}}`'s, and within an inner scope, you can reference properties in the outer scope. This is done by using `../foo` notation. You can step up multiple scope levels by repeating the dots, i.e. `../../../foo`. 
