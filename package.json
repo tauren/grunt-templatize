@@ -1,7 +1,7 @@
 {
   "name": "grunt-templatize",
   "description": "Super simple grunt task to convert an HTML file into a Javascript function",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "keywords": [
     "gruntplugin",
     "html",
@@ -32,6 +32,6 @@
   },
   "main": "lib/templatize",
   "dependencies": {
-    "templatize": "~0.2.1"
+    "templatize": "~0.2.2"
   }
 }
