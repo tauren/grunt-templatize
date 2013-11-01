@@ -3,6 +3,8 @@ grunt-templatize
 
 Super simple grunt task to convert one or more handlebars-like template files into a Javascript module. Supports AMD, commonjs, and namespaced module formats.
 
+Templates support iteration using `{{#each items}}{{/each}}` markup. For this to work, generated templates assume you have `_.map` available, either via `lodash`, `underscore`, or other means. Configuration options are available to use your own `map`-like function.
+
 # Simple Usage Example
 
 First, make sure you have node.js and npm properly installed and working. You will also need to have `grunt-cli` installed globally:
@@ -72,20 +74,23 @@ grunt templatize
 This will generate `dist/templates.js` using the AMD module format with the following content:
 
 ```javascript
-define({footer:function(model){return '<footer><a src="'+model.url+'">'+model.text+'</a></footer>';},
-header:function(model){return '<header><h1>'+model.title+'</h1><div>'+model.body+'</div></header>';}});
+define(['lodash'],function(_){var p={footer:function(m0){return '<footer><a src="'+m0.url+'">'+m0.text+'</a></footer>';},
+header:function(m0){return '<header><h1>'+m0.title+'</h1><div>'+m0.body+'</div></header>';}};return p;});
 ```
 
 Here is a beautified version of `dist/templates.js`:
 
 ```javascript
-define({
-  footer: function (model) {
-    return '<footer><a src="' + model.url + '">' + model.text + '</a></footer>';
-  },
-  header: function (model) {
-    return '<header><h1>' + model.title + '</h1><div>' + model.body + '</div></header>';
-  }
+define( ['lodash'], function (_) {
+  var p = {
+    footer: function (m0) {
+      return '<footer><a src="'+m0.url+'">'+m0.text+'</a></footer>';
+    },
+    header: function (m0) {
+      return '<header><h1>'+m0.title+'</h1><div>'+m0.body+'</div></header>';
+    }
+  };
+  return p;
 });
 ```
 
@@ -127,37 +132,41 @@ templatize: {
 Results using `commonjs` format:
 
 ```javascript
-module.exports={footer:function(model){return '<footer><a src="'+model.url+'">'+model.text+'</a></footer>';},
-header:function(model){return '<header><h1>'+model.title+'</h1><div>'+model.body+'</div></header>';}};
+var _=require('lodash');var p={footer:function(m0){return '<footer><a src="'+m0.url+'">'+m0.text+'</a></footer>';},
+header:function(m0){return '<header><h1>'+m0.title+'</h1><div>'+m0.body+'</div></header>';}};module.exports=p;
 ```
 
 ```javascript
-module.exports = {
-  footer: function (model) {
-    return '<footer><a src="' + model.url + '">' + model.text + '</a></footer>';
+var _ = require('lodash');
+var p = {
+  footer: function (m0) {
+    return '<footer><a src="'+m0.url+'">'+m0.text+'</a></footer>';
   },
-  header: function (model) {
-    return '<header><h1>' + model.title + '</h1><div>' + model.body + '</div></header>';
+  header: function (m0) {
+    return '<header><h1>'+m0.title+'</h1><div>'+m0.body+'</div></header>';
   }
 };
+module.exports=p;
 ```
 
 Results using `namespace` format:
 
 ```javascript
-!function(root){root.templatize.footer=function(model){return '<footer><a src="'+model.url+'">'+model.text+'</a></footer>';}
-root.templatize.header=function(model){return '<header><h1>'+model.title+'</h1><div>'+model.body+'</div></header>';}}(this);
+!function(root,_){root.templatize=root.templatize||{};var p=root.templatize;root.templatize.footer=function(m0){return '<footer><a src="'+m0.url+'">'+m0.text+'</a></footer>';};
+root.templatize.header=function(m0){return '<header><h1>'+m0.title+'</h1><div>'+m0.body+'</div></header>';};}(this,_);
 ```
 
 ```javascript
-!function (root) {
-  root.templatize.footer = function (model) {
-    return '<footer><a src="' + model.url + '">' + model.text + '</a></footer>';
-  }
-  root.templatize.header = function (model) {
-    return '<header><h1>' + model.title + '</h1><div>' + model.body + '</div></header>';
-  }
-}(this);
+!function(root,_){
+  root.templatize = root.templatize || {};
+  var p = root.templatize;
+  root.templatize.footer = function(m0) {
+    return '<footer><a src="'+m0.url+'">'+m0.text+'</a></footer>';
+  };
+  root.templatize.header = function(m0) {
+    return '<header><h1>'+m0.title+'</h1><div>'+m0.body+'</div></header>';
+  };
+}(this,_);
 ```
 
 Support for multiple output target destination files:
@@ -193,11 +202,9 @@ grunt.initConfig({
         // 'amd', 'commonjs', 'namespace'
         format: 'amd',
         // Prefix at top of each output file 
-        prefix: 'define({',
-        // Suffix at end of each output file
-        suffix: '});',
+        prefix: 'define([\'lodash\'],function(_){',
         // Prefix before first source file 
-        firstPrefix: '',
+        firstPrefix: 'var p={',
         // Prefix before each source file except the first
         eachPrefix: '',
         // Output between key (source filename) and function 
@@ -205,7 +212,9 @@ grunt.initConfig({
         // Suffix after each source file except the last
         eachSuffix: ',',
         // Suffix after last source file
-        lastSuffix: '',
+        lastSuffix: '};return p;',
+        // Suffix at end of each output file
+        suffix: '});'
         // Options to pass to the templatize library
         templatize: {
           // Options to use with the HTML Minifier
@@ -298,13 +307,12 @@ templatize: {
 
 Iteration is supported using `{{#each item}}` and `{{/each}}` tags in your templates.  When these tags are used, the templatized output includes calls to the `_.map()` function. If you are using Underscore or Lodash, this is available out of the box. If not, any implementation that is API compatible with the Underscore version should work.
 
-Note that you may need to provide a custom `prefix` and `suffix` to use iteration effectively. For instance, to use this in an AMD module, you could use this configuration:
+Note that you may need to provide a custom `prefix` and `suffix` to use iteration effectively. For instance, to use Underscore instead of Lodash in an AMD module, you could use this configuration:
 
 ```javascript
 templatize: {
   options: {
-    prefix: 'define(["lodash"],function(_){return {',
-    suffix: '};});'
+    prefix: 'define(["underscore"],function(_){'
   }
 }
 ```
@@ -337,3 +345,29 @@ This template should be given an object with this structure:
 ```
 
 Note that templatize supports nested `{{#each}}`'s, and within an inner scope, you can reference properties in the outer scope. This is done by using `../foo` notation. You can step up multiple scope levels by repeating the dots, i.e. `../../../foo`. 
+
+## Partials in Templates
+
+Templatize also supports template partials using the `{{>partial}}` directive. Any template can be used as a partial and can be embedded within the output of another template. The model passed into a partial is the current context at the time the partial is called.
+
+Here is an example of using a partial:
+
+list.tmplz: 
+```
+<h1>{{title}}</h1>
+<ul>
+  {{#each items}}
+    {{>listitem}}
+  {{/each}}
+</ul>
+```
+
+listitem.tmplz:
+```
+<li>
+  <span>{{name}}</span>
+</li>
+```
+
+Note that you cannot reference properties in the calling function from within a partial. You can only access properties on the model that was passed to the partial. 
+

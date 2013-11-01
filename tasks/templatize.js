@@ -17,21 +17,19 @@ module.exports = function(grunt) {
   // Currently supporting commonjs and AMD, default AMD  
   var formats = {
     commonjs: {
-      prefix: 'module.exports={',
-      suffix: '};',
+      prefix: 'var _=require(\'lodash\');var p={',
       firstPrefix: '',
       eachPrefix: '',
       eachMiddle: ':',
       eachSuffix: ',',
-      lastSuffix: ''
+      lastSuffix: '',
+      suffix: '};module.exports=p;'
     },
     amd: {
       // Prefix at top of each output file 
-      prefix: 'define({',
-      // Suffix at end of each output file
-      suffix: '});',
+      prefix: 'define([\'lodash\'],function(_){',
       // Prefix before first source file 
-      firstPrefix: '',
+      firstPrefix: 'var p={',
       // Prefix before each source file except the first
       eachPrefix: '',
       // Output between key (source filename) and function 
@@ -39,16 +37,18 @@ module.exports = function(grunt) {
       // Suffix after each source file except the last
       eachSuffix: ',',
       // Suffix after last source file
-      lastSuffix: ''
+      lastSuffix: '};return p;',
+      // Suffix at end of each output file
+      suffix: '});'
     },
     namespace: {
-      prefix: "!function(root){",
-      suffix: "}(this);",
-      firstPrefix: 'root.templatize.',
+      prefix: "!function(root,_){",
+      firstPrefix: 'root.templatize=root.templatize||{};var p=root.templatize;root.templatize.',
       eachPrefix: 'root.templatize.',
       eachMiddle: '=',
-      eachSuffix: '',
-      lastSuffix: ''
+      eachSuffix: ';',
+      lastSuffix: ';',
+      suffix: "}(this,_);"
     }
   };
 
